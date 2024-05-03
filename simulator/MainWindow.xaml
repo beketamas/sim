@@ -1,0 +1,27 @@
+﻿<Window x:Class="simulator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:simulator"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition ></RowDefinition>
+            <RowDefinition Height="3.8*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <RadioButton Grid.Row="0" Margin="0,0,0,325" Grid.RowSpan="2">Autómatikus</RadioButton>
+        <RadioButton Grid.Row="0" Margin="0,20,0,25">Lépés szerint</RadioButton>
+        <Slider Margin="0 40 0 0" Width="300px"
+                HorizontalAlignment="Left"
+                Maximum="500"
+                ></Slider>
+        <Button Margin="0,64,0,0" VerticalAlignment="Top"
+                 Height="20"
+                x:Name="btnLepes">Lépés</Button>
+        <Grid Grid.Row="1" x:Name="tabla">
+            
+        </Grid>
+    </Grid>
+</Window>
