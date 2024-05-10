@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -23,9 +23,10 @@ namespace simulator
     {
         const int SOROK_SZAMA = 10;
         const int OSZLOPOK_SZAMA = 15;
-        int playerCount = 10;
+        const int JATEKOSOK_SZAMA = 30;
+        const int AKNAK_SZAM = 10;
         string[,] matrix = new string[SOROK_SZAMA,OSZLOPOK_SZAMA];
-        string lepes = "";
+        List<string> helyek = new List<string>();
         public MainWindow()
         {
             InitializeComponent();
@@ -33,14 +34,20 @@ namespace simulator
             tabla.ColumnDefinitions.Clear();
             tabla.RowDefinitions.Clear();
             tabla.Background = new SolidColorBrush(Colors.LightGreen);
-            int szamlalo = 1;
-
             for (int i = 0; i < SOROK_SZAMA; i++)
             {
                 for (int j = 0; j < OSZLOPOK_SZAMA; j++)
+                {
                     matrix[i, j] = "semmi";
+                    helyek.Add($"{i};{j}");
+                    Border border = new();
+                    border.BorderBrush = new SolidColorBrush(Colors.Red);
+                    border.BorderThickness = new Thickness(1);
+                    Grid.SetColumn(border, j);
+                    Grid.SetRow(border, i);
+                    tabla.Children.Add(border);
+                }
             }
-
             for (int oszlopIndex = 0; oszlopIndex < OSZLOPOK_SZAMA; oszlopIndex++)
             {
                 ColumnDefinition ujOszlop = new();
@@ -52,62 +59,51 @@ namespace simulator
                 RowDefinition ujSor = new();
                 tabla.RowDefinitions.Add(ujSor);
             }
-            for (int i = 0; i < SOROK_SZAMA; i++)
+            for (int i = 0; i < AKNAK_SZAM; i++)
             {
-
-                for (int j = 0; j < OSZLOPOK_SZAMA; j++)
+                Random rnd = new();
+                var sure = helyek.Where(x => x != "akna" && x != "jatekos").ToList();
+                int szam = rnd.Next(0, sure.Count);
+                int x = int.Parse(sure[szam].Split(";")[0]);
+                int y = int.Parse(sure[szam].Split(";")[1]);
+                if (matrix[x, y] == "semmi")
                 {
-                    Border border = new Border();
-                    border.BorderBrush = new SolidColorBrush(Colors.Red);
-                    border.BorderThickness = new Thickness(1);
-                    Grid.SetColumn(border, j);
-                    Grid.SetRow(border, i);
-                    tabla.Children.Add(border);
-
-                    Random rnd = new Random();
-                    int szam = rnd.Next(0, 5);
-                    if (szam == 1 && matrix[i,j] == "semmi")
+                    matrix[x, y] = "akna";
+                    Ellipse kor = new()
                     {
-                        Ellipse kor = new()
-                        {
-                            Fill = new SolidColorBrush(Colors.Orange),
-                            Width = 30,
-                            Height = 30,
-                        };
-                        Grid.SetColumn(kor, j);
-                        Grid.SetRow(kor, i);
-                        tabla.Children.Add(kor);
-                        matrix[i, j] = "akna";
-                    }
-                    else if (szam == 2 && playerCount != 0)
-                    {
-                        Button player = new()
-                        {
-                            Background = new SolidColorBrush(Colors.Yellow),
-                            Content = szamlalo,
-                        };
-                        playerCount--;
-                        tabla.Children.Add(player);
-                        szamlalo++;
-                        Random randomSor = new();
-                        Random randomOzlop = new();
-                        while (true)
-                        {
-                            int szam1 = randomSor.Next(0, SOROK_SZAMA);
-                            int szam2 = randomOzlop.Next(0, OSZLOPOK_SZAMA);
-                            if (matrix[szam1,szam2] == "semmi" )
-                            {
-                                Grid.SetColumn(player, szam2);
-                                Grid.SetRow(player, szam1);
-                                matrix[szam1, szam2] = "jatekos";
-                                break;
-                            }
-                        }
-
-                    }
+                        Fill = new SolidColorBrush(Colors.Orange),
+                        Width = 30,
+                        Height = 30,
+                    };
+                    Grid.SetColumn(kor, y);
+                    Grid.SetRow(kor, x);
+                    tabla.Children.Add(kor);
+                    helyek[szam] = "akna";
                 }
             }
+            for (int i = 0; i < JATEKOSOK_SZAMA; i++)
+            {
+                Random rnd = new();
+                var sure = helyek.Where(x => x != "akna" && x != "jatekos").ToList();
 
+                int szam = rnd.Next(0, sure.Count);
+                int x = int.Parse(sure[szam].Split(";")[0]);
+                int y = int.Parse(sure[szam].Split(";")[1]);
+                if (matrix[x, y] == "semmi")
+                {
+
+                    matrix[x, y] = "jatekos";
+                    Button player = new()
+                    {
+                        Background = new SolidColorBrush(Colors.Yellow),
+                        Content = i+1,
+                    };
+                    Grid.SetColumn(player, y);
+                    Grid.SetRow(player, x);
+                    tabla.Children.Add(player);
+                    helyek[szam] = "jatekos";
+                }
+            }
             btnLepes.Click += (s, r) =>
             {
                 foreach (var item in tabla.Children)
@@ -116,38 +112,53 @@ namespace simulator
                     {
                         int sor = Grid.GetRow(item as Button);
                         int oszlop = Grid.GetColumn(item as Button);
-                        if (sor+1 < SOROK_SZAMA && matrix[sor + 1, oszlop] == "semmi" && lepes != "le")
+                        List<string> listLehetosegek = new List<string>();
+                        if (sor + 1 < SOROK_SZAMA && matrix[sor + 1, oszlop] == "semmi")
+                            listLehetosegek.Add("le");
+                        if (sor - 1 > 0 && matrix[sor - 1, oszlop] == "semmi")
+                            listLehetosegek.Add("fel");
+                        if (oszlop + 1 < OSZLOPOK_SZAMA && matrix[sor, oszlop + 1] == "semmi")
+                            listLehetosegek.Add("jobb");
+                        if (oszlop - 1 >= 0 && matrix[sor, oszlop - 1] == "semmi")
+                            listLehetosegek.Add("bal");
+                        Random numLep = new();
+                        if (listLehetosegek.Count != 0)
                         {
-                            Grid.SetColumn(item as Button, Grid.GetColumn(item as Button));
-                            Grid.SetRow(item as Button, Grid.GetRow(item as Button) + 1);
-                            lepes = "le";
-                        }
-                        else if (sor - 1 > 0 && matrix[sor - 1, oszlop] == "semmi" && lepes != "fel")
-                        {
-                            Grid.SetColumn(item as Button, Grid.GetColumn(item as Button));
-                            Grid.SetRow(item as Button, Grid.GetRow(item as Button) - 1);
-                            lepes = "fel";
-                        }
-                        else if (oszlop + 1 < OSZLOPOK_SZAMA && matrix[sor, oszlop + 1] == "semmi" && lepes != "jobb")
-                        {
-                            Grid.SetColumn(item as Button, Grid.GetColumn(item as Button) + 1);
-                            Grid.SetRow(item as Button, Grid.GetRow(item as Button));
-                            lepes = "jobb";
-
-                        }
-                        else if (oszlop - 1 > 0 && matrix[sor, oszlop - 1] == "semmi" && lepes != "bal")
-                        {
-                            Grid.SetColumn(item as Button, Grid.GetColumn(item as Button) - 1);
-                            Grid.SetRow(item as Button, Grid.GetRow(item as Button));
-                            lepes = "bal";
-
-
+                            switch (listLehetosegek[numLep.Next(0, listLehetosegek.Count)])
+                            {
+                                case "le":
+                                    Grid.SetColumn(item as Button, Grid.GetColumn(item as Button));
+                                    Grid.SetRow(item as Button, Grid.GetRow(item as Button) + 1);
+                                    matrix[sor, oszlop] = "semmi";
+                                    matrix[sor + 1, oszlop] = "jatekos";
+                                    break;
+                                case "fel":
+                                    Grid.SetColumn(item as Button, Grid.GetColumn(item as Button));
+                                    Grid.SetRow(item as Button, Grid.GetRow(item as Button) - 1);
+                                    matrix[sor, oszlop] = "semmi";
+                                    matrix[sor - 1, oszlop] = "jatekos";
+                                    break;
+                                case "jobb":
+                                    Grid.SetColumn(item as Button, Grid.GetColumn(item as Button) + 1);
+                                    Grid.SetRow(item as Button, Grid.GetRow(item as Button));
+                                    matrix[sor, oszlop] = "semmi";
+                                    matrix[sor, oszlop + 1] = "jatekos";
+                                    break;
+                                case "bal":
+                                    Grid.SetColumn(item as Button, Grid.GetColumn(item as Button) - 1);
+                                    Grid.SetRow(item as Button, Grid.GetRow(item as Button));
+                                    matrix[sor, oszlop] = "semmi";
+                                    matrix[sor, oszlop - 1] = "jatekos";
+                                    break;
+                            }
                         }
                         Random num = new Random();
-                        //item.Background = new SolidColorBrush(Color.FromRgb(Convert.ToByte(num.Next(0,255)), Convert.ToByte(num.Next(0, 255)), Convert.ToByte(num.Next(0, 255))));
+                        (item as Button).Background = new SolidColorBrush(Color.FromRgb(Convert.ToByte(num.Next(0,255)), Convert.ToByte(num.Next(0, 255)), Convert.ToByte(num.Next(0, 255))));
                     }
                 }
             };
+
+
 
         }
     }
