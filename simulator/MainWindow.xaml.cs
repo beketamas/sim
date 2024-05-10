@@ -1,5 +1,6 @@
 ﻿    using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace simulator
 {
@@ -34,6 +36,7 @@ namespace simulator
             tabla.ColumnDefinitions.Clear();
             tabla.RowDefinitions.Clear();
             tabla.Background = new SolidColorBrush(Colors.LightGreen);
+
             for (int i = 0; i < SOROK_SZAMA; i++)
             {
                 for (int j = 0; j < OSZLOPOK_SZAMA; j++)
@@ -59,7 +62,9 @@ namespace simulator
                 RowDefinition ujSor = new();
                 tabla.RowDefinitions.Add(ujSor);
             }
-            for (int i = 0; i < AKNAK_SZAM; i++)
+
+            int index1 = 0;
+            while (index1 < AKNAK_SZAM)
             {
                 Random rnd = new();
                 var sure = helyek.Where(x => x != "akna" && x != "jatekos").ToList();
@@ -68,7 +73,6 @@ namespace simulator
                 int y = int.Parse(sure[szam].Split(";")[1]);
                 if (matrix[x, y] == "semmi")
                 {
-                    matrix[x, y] = "akna";
                     Ellipse kor = new()
                     {
                         Fill = new SolidColorBrush(Colors.Orange),
@@ -79,9 +83,12 @@ namespace simulator
                     Grid.SetRow(kor, x);
                     tabla.Children.Add(kor);
                     helyek[szam] = "akna";
+                    matrix[x, y] = "akna";
+                    index1++;
                 }
             }
-            for (int i = 0; i < JATEKOSOK_SZAMA; i++)
+            int index2 = 0;
+            while (index2 < JATEKOSOK_SZAMA)
             {
                 Random rnd = new();
                 var sure = helyek.Where(x => x != "akna" && x != "jatekos").ToList();
@@ -92,18 +99,20 @@ namespace simulator
                 if (matrix[x, y] == "semmi")
                 {
 
-                    matrix[x, y] = "jatekos";
                     Button player = new()
                     {
                         Background = new SolidColorBrush(Colors.Yellow),
-                        Content = i+1,
+                        Content = index2 + 1,
                     };
                     Grid.SetColumn(player, y);
                     Grid.SetRow(player, x);
                     tabla.Children.Add(player);
                     helyek[szam] = "jatekos";
+                    matrix[x, y] = "jatekos";
+                    index2++;
                 }
             }
+
             btnLepes.Click += (s, r) =>
             {
                 foreach (var item in tabla.Children)
@@ -157,9 +166,6 @@ namespace simulator
                     }
                 }
             };
-
-
-
         }
     }
 }
