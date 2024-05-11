@@ -11,11 +11,12 @@
             <RowDefinition ></RowDefinition>
             <RowDefinition Height="3.8*"></RowDefinition>
         </Grid.RowDefinitions>
-        <RadioButton Grid.Row="0" Margin="0,0,0,325" Grid.RowSpan="2">Autómatikus</RadioButton>
-        <RadioButton Grid.Row="0" Margin="0,20,0,25">Lépés szerint</RadioButton>
+        <RadioButton Grid.Row="0" x:Name="auto"  Margin="0,0,0,325" Grid.RowSpan="2">Automatikus</RadioButton>
+        <RadioButton Grid.Row="0" x:Name="manual" IsChecked="True" Margin="0,20,0,25" >Lépés szerint</RadioButton>
         <Slider Margin="0 40 0 0" Width="300px"
                 HorizontalAlignment="Left"
                 Maximum="500"
+                x:Name="sldCsuszka"
                 ></Slider>
         <Button Margin="0,64,0,0" VerticalAlignment="Top"
                  Height="20"
