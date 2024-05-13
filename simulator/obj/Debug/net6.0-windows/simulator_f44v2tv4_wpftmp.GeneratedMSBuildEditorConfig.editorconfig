@@ -7,5 +7,5 @@ build_property.InvariantGlobalization =
 build_property.PlatformNeutralAssembly = 
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
-build_property.RootNamespace = simulator
+build_property.RootNamespace = simulator_f44v2tv4_wpftmp
 build_property.ProjectDir = C:\Users\Felhasznalo\source\repos\beketamas\sim\simulator\
