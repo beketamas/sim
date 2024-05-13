@@ -39,20 +39,18 @@ namespace simulator
             sldCsuszka.Value = 250;
             tabla.ColumnDefinitions.Clear();
             tabla.RowDefinitions.Clear();
-            tabla.Background = new SolidColorBrush(Colors.LightGreen);
-
             for (int i = 0; i < SOROK_SZAMA; i++)
             {
                 for (int j = 0; j < OSZLOPOK_SZAMA; j++)
                 {
                     matrix[i, j] = "semmi";
                     helyek.Add($"{i};{j}");
-                    Border border = new();
-                    border.BorderBrush = new SolidColorBrush(Colors.Red);
-                    border.BorderThickness = new Thickness(1);
-                    Grid.SetColumn(border, j);
-                    Grid.SetRow(border, i);
-                    tabla.Children.Add(border);
+                    //Border border = new();
+                    //border.BorderBrush = new SolidColorBrush(Colors.Red);
+                    //border.BorderThickness = new Thickness(1);
+                    //Grid.SetColumn(border, j);
+                    //Grid.SetRow(border, i);
+                    //tabla.Children.Add(border);
                 }
             }
             for (int oszlopIndex = 0; oszlopIndex < OSZLOPOK_SZAMA; oszlopIndex++)
@@ -77,15 +75,15 @@ namespace simulator
                 int y = int.Parse(sure[szam].Split(";")[1]);
                 if (matrix[x, y] == "semmi")
                 {
-                    Ellipse kor = new()
-                    {
-                        Fill = new SolidColorBrush(Colors.Orange),
-                        Width = 30,
-                        Height = 30,
-                    };
-                    Grid.SetColumn(kor, y);
-                    Grid.SetRow(kor, x);
-                    tabla.Children.Add(kor);
+                    Rectangle rectangle = new();
+                    BitmapImage luk = new();
+                    luk.BeginInit();
+                    luk.UriSource = new Uri(@"hole.png", UriKind.RelativeOrAbsolute);
+                    luk.EndInit();
+                    rectangle.Fill = new ImageBrush(luk);
+                    Grid.SetColumn(rectangle, y);
+                    Grid.SetRow(rectangle, x);
+                    tabla.Children.Add(rectangle);
                     helyek[szam] = "akna";
                     matrix[x, y] = "akna";
                     index1++;
@@ -103,14 +101,14 @@ namespace simulator
                 if (matrix[x, y] == "semmi")
                 {
 
-                    Button player = new()
+                    Player jatekos = new(SOROK_SZAMA,OSZLOPOK_SZAMA,x,y, new string[SOROK_SZAMA,OSZLOPOK_SZAMA]) 
                     {
                         Background = new SolidColorBrush(Colors.Yellow),
                         Content = index2 + 1,
                     };
-                    Grid.SetColumn(player, y);
-                    Grid.SetRow(player, x);
-                    tabla.Children.Add(player);
+                    Grid.SetColumn(jatekos, y);
+                    Grid.SetRow(jatekos, x);
+                    tabla.Children.Add(jatekos);
                     helyek[szam] = "jatekos";
                     matrix[x, y] = "jatekos";
                     index2++;
@@ -129,7 +127,11 @@ namespace simulator
                 sldCsuszka.ValueChanged += Slider_ValueChanged;
                 timer.Start();
             };
-            manual.Checked += (s, e) => btnLepes.IsEnabled = true;
+            manual.Checked += (s, e) =>
+            {
+                btnLepes.IsEnabled = true;
+                timer.Stop();
+            };
         }
         public static void VaneEAkna(int x, int y, List<string> lista, string merre) => lista.Add(matrix[x, y] == "akna" ? "akna" : merre);
         private void Timer_Tick(object sender, EventArgs e) => Lepkedes(tabla);
@@ -159,7 +161,7 @@ namespace simulator
                         VaneEAkna(sor, oszlop - 1, listLehetosegek, "bal");
 
                     Random numLep = new();
-                    if (listLehetosegek.Count != 0)
+                    if (listLehetosegek.Count != 0 && gomb is Player player)
                     {
                         switch (listLehetosegek[numLep.Next(0, listLehetosegek.Count)])
                         {
@@ -168,35 +170,59 @@ namespace simulator
                                 Grid.SetRow(gomb, Grid.GetRow(gomb) + 1);
                                 matrix[sor, oszlop] = "semmi";
                                 matrix[sor + 1, oszlop] = "jatekos";
+                                player.Terkep[sor, oszlop] = "semmi";
+                                player.Terkep[sor+1, oszlop] = "jatekos";
                                 break;
                             case "fel":
                                 Grid.SetColumn(gomb, Grid.GetColumn(gomb));
                                 Grid.SetRow(gomb, Grid.GetRow(gomb) - 1);
                                 matrix[sor, oszlop] = "semmi";
                                 matrix[sor - 1, oszlop] = "jatekos";
+                                player.Terkep[sor, oszlop] = "semmi";
+                                player.Terkep[sor -1, oszlop] = "jatekos";
                                 break;
                             case "jobb":
                                 Grid.SetColumn(gomb, Grid.GetColumn(gomb) + 1);
                                 Grid.SetRow(gomb, Grid.GetRow(gomb));
                                 matrix[sor, oszlop] = "semmi";
                                 matrix[sor, oszlop + 1] = "jatekos";
+                                player.Terkep[sor, oszlop] = "semmi";
+                                player.Terkep[sor, oszlop+1] = "jatekos";
                                 break;
                             case "bal":
                                 Grid.SetColumn(gomb, Grid.GetColumn(gomb) - 1);
                                 Grid.SetRow(gomb, Grid.GetRow(gomb));
                                 matrix[sor, oszlop] = "semmi";
                                 matrix[sor, oszlop - 1] = "jatekos";
+                                player.Terkep[sor, oszlop] = "semmi";
+                                player.Terkep[sor, oszlop-1] = "jatekos";
                                 break;
                             case "akna":
                                 matrix[sor, oszlop] = "semmi";
                                 UIElement? element = tabla.Children.Cast<UIElement>().FirstOrDefault(e => Grid.GetRow(e) == sor && Grid.GetColumn(e) == oszlop);
                                 tabla.Children.Remove(element);
+                                //Broderezes(tabla);
                                 break;
                         }
                     }
-                    Random num = new Random();
-                    gomb.Background = new SolidColorBrush(Color.FromRgb(Convert.ToByte(num.Next(0, 255)), Convert.ToByte(num.Next(0, 255)), Convert.ToByte(num.Next(0, 255))));
+                    //Random num = new Random();
+                    //gomb.Background = new SolidColorBrush(Color.FromRgb(Convert.ToByte(num.Next(0, 255)), Convert.ToByte(num.Next(0, 255)), Convert.ToByte(num.Next(0, 255))));
 
+                }
+            }
+        }
+        public static void Broderezes(Grid tabla)
+        {
+            for (int i = 0; i < SOROK_SZAMA; i++)
+            {
+                for (int j = 0; j < OSZLOPOK_SZAMA; j++)
+                {
+                    Border border = new();
+                    border.BorderBrush = new SolidColorBrush(Colors.Red);
+                    border.BorderThickness = new Thickness(1);
+                    Grid.SetColumn(border, j);
+                    Grid.SetRow(border, i);
+                    tabla.Children.Add(border);
                 }
             }
         }

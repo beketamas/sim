@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:simulator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="600" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition ></RowDefinition>
@@ -21,8 +21,8 @@
         <Button Margin="0,64,0,0" VerticalAlignment="Top"
                  Height="20"
                 x:Name="btnLepes">Lépés</Button>
-        <Grid Grid.Row="1" x:Name="tabla">
-            
+        <Grid Grid.Row="1" x:Name="tabla"
+              Background="#C7EEFF">
         </Grid>
     </Grid>
 </Window>
