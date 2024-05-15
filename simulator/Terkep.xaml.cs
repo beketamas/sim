@@ -23,9 +23,12 @@ namespace simulator
         {
             InitializeComponent();
         }
-        public Terkep(string[,] terkep)
+        public Terkep(string[,] terkep, int sorSzam, HashSet<string> whiteList)
         {
             InitializeComponent();
+            Title = $"{sorSzam}. player || {String.Join("||", whiteList)}";
+            Uri iconUri = new("turbo.jpeg", UriKind.RelativeOrAbsolute);
+            Icon = BitmapFrame.Create(iconUri);
             int xSor = terkep.GetLength(0);
             int yOszlop = terkep.GetLength(1);
             for (int oszlopIndex = 0; oszlopIndex < yOszlop; oszlopIndex++)
@@ -43,7 +46,7 @@ namespace simulator
             {
                 for (int j = 0; j < yOszlop; j++)
                 {
-                    Label lbl = new Label
+                    Label lbl = new()
                     {
                         Content = terkep[i, j] == "jatekos" ? "jatekos"  : terkep[i, j] == "semmi" ? "semmi" : "?",
                         VerticalContentAlignment = VerticalAlignment.Center,

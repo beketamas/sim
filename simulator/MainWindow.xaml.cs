@@ -100,12 +100,17 @@ namespace simulator
                 int y = int.Parse(sure[szam].Split(";")[1]);
                 if (matrix[x, y] == "semmi")
                 {
-
-                    Player jatekos = new(SOROK_SZAMA,OSZLOPOK_SZAMA,x,y, new string[SOROK_SZAMA,OSZLOPOK_SZAMA]) 
+                    BitmapImage babu = new();
+                    babu.BeginInit();
+                    babu.UriSource = new Uri(@"turbo.jpeg", UriKind.RelativeOrAbsolute);
+                    Player jatekos = new(SOROK_SZAMA,OSZLOPOK_SZAMA,x,y, new string[SOROK_SZAMA,OSZLOPOK_SZAMA], index2+1) 
                     {
-                        Background = new SolidColorBrush(Colors.Yellow),
-                        Content = index2 + 1,
+
+                        //Background = new SolidColorBrush(Colors.Yellow),
+                        Background = new ImageBrush(babu),
+                        //Content = index2 + 1,
                     };
+                    babu.EndInit();
                     Grid.SetColumn(jatekos, y);
                     Grid.SetRow(jatekos, x);
                     tabla.Children.Add(jatekos);
@@ -134,7 +139,7 @@ namespace simulator
                 timer.Stop();
             };
         }
-        public static void VaneEAkna(int x, int y, List<string> lista, string merre) => lista.Add(matrix[x, y] == "akna" ? "akna" : merre);
+        public static void VaneELuk(int x, int y, List<string> lista, string merre) => lista.Add(matrix[x, y] == "akna" ? "akna" : merre);
         private void Timer_Tick(object sender, EventArgs e) => Lepkedes(tabla);
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -153,13 +158,13 @@ namespace simulator
                     int oszlop = Grid.GetColumn(gomb);
                     List<string> listLehetosegek = new List<string>();
                     if (sor + 1 < SOROK_SZAMA && (matrix[sor + 1, oszlop] == "semmi" || matrix[sor + 1, oszlop] == "akna"))
-                        VaneEAkna(sor + 1, oszlop, listLehetosegek, "le");
+                        VaneELuk(sor + 1, oszlop, listLehetosegek, "le");
                     if (sor - 1 > 0 && (matrix[sor - 1, oszlop] == "semmi" || matrix[sor - 1, oszlop] == "akna"))
-                        VaneEAkna(sor - 1, oszlop, listLehetosegek, "fel");
+                        VaneELuk(sor - 1, oszlop, listLehetosegek, "fel");
                     if (oszlop + 1 < OSZLOPOK_SZAMA && (matrix[sor, oszlop + 1] == "semmi" || matrix[sor, oszlop + 1] == "akna"))
-                        VaneEAkna(sor, oszlop + 1, listLehetosegek, "jobb");
+                        VaneELuk(sor, oszlop + 1, listLehetosegek, "jobb");
                     if (oszlop - 1 >= 0 && (matrix[sor, oszlop - 1] == "semmi" || matrix[sor, oszlop - 1] == "akna"))
-                        VaneEAkna(sor, oszlop - 1, listLehetosegek, "bal");
+                        VaneELuk(sor, oszlop - 1, listLehetosegek, "bal");
 
                     Random numLep = new();
                     if (listLehetosegek.Count != 0 && gomb is Player player)
@@ -173,6 +178,7 @@ namespace simulator
                                 matrix[sor + 1, oszlop] = "jatekos";
                                 player.Terkep[sor, oszlop] = "semmi";
                                 player.Terkep[sor+1, oszlop] = "jatekos";
+                                player.WhiteList.Add($"{sor+1};{oszlop}");
                                 break;
                             case "fel":
                                 Grid.SetColumn(gomb, Grid.GetColumn(gomb));
@@ -181,6 +187,7 @@ namespace simulator
                                 matrix[sor - 1, oszlop] = "jatekos";
                                 player.Terkep[sor, oszlop] = "semmi";
                                 player.Terkep[sor -1, oszlop] = "jatekos";
+                                player.WhiteList.Add($"{sor - 1};{oszlop}");
                                 break;
                             case "jobb":
                                 Grid.SetColumn(gomb, Grid.GetColumn(gomb) + 1);
@@ -189,6 +196,7 @@ namespace simulator
                                 matrix[sor, oszlop + 1] = "jatekos";
                                 player.Terkep[sor, oszlop] = "semmi";
                                 player.Terkep[sor, oszlop+1] = "jatekos";
+                                player.WhiteList.Add($"{sor};{oszlop + 1}");
                                 break;
                             case "bal":
                                 Grid.SetColumn(gomb, Grid.GetColumn(gomb) - 1);
@@ -197,6 +205,7 @@ namespace simulator
                                 matrix[sor, oszlop - 1] = "jatekos";
                                 player.Terkep[sor, oszlop] = "semmi";
                                 player.Terkep[sor, oszlop-1] = "jatekos";
+                                player.WhiteList.Add($"{sor};{oszlop - 1}");
                                 break;
                             case "akna":
                                 matrix[sor, oszlop] = "semmi";
