@@ -1,4 +1,4 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace simulator
         const int OSZLOPOK_SZAMA = 15;
         const int JATEKOSOK_SZAMA = 30;
         const int AKNAK_SZAM = 10;
-        static string[,] matrix = new string[SOROK_SZAMA,OSZLOPOK_SZAMA];
+        static string[,] matrix = new string[SOROK_SZAMA, OSZLOPOK_SZAMA];
         public static List<string> helyek = new List<string>();
         private DispatcherTimer timer;
         public MainWindow()
@@ -112,6 +112,7 @@ namespace simulator
                     helyek[szam] = "jatekos";
                     matrix[x, y] = "jatekos";
                     index2++;
+
                 }
             }
 
@@ -211,7 +212,7 @@ namespace simulator
                 }
             }
         }
-        public static void Broderezes(Grid tabla)
+        public static void Borderezes(Grid tabla)
         {
             for (int i = 0; i < SOROK_SZAMA; i++)
             {
