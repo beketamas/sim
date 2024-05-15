@@ -105,7 +105,6 @@ namespace simulator
                     babu.UriSource = new Uri(@"turbo.jpeg", UriKind.RelativeOrAbsolute);
                     Player jatekos = new(SOROK_SZAMA,OSZLOPOK_SZAMA,x,y, new string[SOROK_SZAMA,OSZLOPOK_SZAMA], index2+1) 
                     {
-
                         //Background = new SolidColorBrush(Colors.Yellow),
                         Background = new ImageBrush(babu),
                         //Content = index2 + 1,
@@ -156,7 +155,7 @@ namespace simulator
                     Button? gomb = tabla.Children[i] as Button;
                     int sor = Grid.GetRow(gomb);
                     int oszlop = Grid.GetColumn(gomb);
-                    List<string> listLehetosegek = new List<string>();
+                    List<string> listLehetosegek = new();
                     if (sor + 1 < SOROK_SZAMA && (matrix[sor + 1, oszlop] == "semmi" || matrix[sor + 1, oszlop] == "akna"))
                         VaneELuk(sor + 1, oszlop, listLehetosegek, "le");
                     if (sor - 1 > 0 && (matrix[sor - 1, oszlop] == "semmi" || matrix[sor - 1, oszlop] == "akna"))
